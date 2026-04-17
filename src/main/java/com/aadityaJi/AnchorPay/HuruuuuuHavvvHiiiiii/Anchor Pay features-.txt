@@ -1,3 +1,0 @@
-Anchor Pay features-
-Double Validation on both user request(dto) and also on DB entries(entity)
-DTOs so that ..abstraction ban rhe h ..user ko unwanted and frontend ko unwanted data na mile
