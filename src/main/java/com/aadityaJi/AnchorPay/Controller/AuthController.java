@@ -1,5 +1,7 @@
 package com.aadityaJi.AnchorPay.Controller;
 
+import com.aadityaJi.AnchorPay.DTOs.LoginRequestDTO;
+import com.aadityaJi.AnchorPay.DTOs.LoginResponseDTO;
 import com.aadityaJi.AnchorPay.DTOs.RegisterRequestDTO;
 import com.aadityaJi.AnchorPay.DTOs.RegisterResponseDTO;
 import com.aadityaJi.AnchorPay.Service.AuthService;
@@ -24,10 +26,21 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> login(@Valid @RequestBody RegisterRequestDTO dto){
+    public ResponseEntity<?> register(@Valid @RequestBody RegisterRequestDTO dto){
         try {
             RegisterResponseDTO responseBody = authService.registerUser(dto);
             return new ResponseEntity<>(responseBody,HttpStatus.CREATED);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@Valid @RequestBody LoginRequestDTO dto){
+        try{
+            LoginResponseDTO responseDTO = authService.login(dto);
+            return new ResponseEntity<>(responseDTO,HttpStatus.OK);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
