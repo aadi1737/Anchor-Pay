@@ -1,16 +1,19 @@
 package com.aadityaJi.AnchorPay.DTOs;
 
-import com.aadityaJi.AnchorPay.Entity.TransactionEntity;
-import com.aadityaJi.AnchorPay.Entity.UserEntity;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
 @Builder
-public class RegisterResponseDTO {
-    private String username;
+public class WalletRequestDTO {
+
+    @NotBlank(message = "Wallet owner id is mandatory.")
+    private long uid;
 }
