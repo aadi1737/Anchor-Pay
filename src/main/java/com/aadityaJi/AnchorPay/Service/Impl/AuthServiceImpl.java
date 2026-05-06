@@ -11,6 +11,7 @@ import com.aadityaJi.AnchorPay.Repository.UserRepository;
 import com.aadityaJi.AnchorPay.Service.AuthService;
 import com.aadityaJi.AnchorPay.Service.WalletService;
 import jakarta.transaction.Transactional;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -72,6 +73,18 @@ public class AuthServiceImpl implements AuthService {
                 responseDTO.setJwtToken(jwtToken);
                 responseDTO.setWalletID(user.getWallet()!=null? user.getWallet().getWalletId(): null);
                 return responseDTO;
+        }
+    }
+
+    @Override
+    public void logout(String authHeader){
+        if(authHeader != null && authHeader.startsWith("Bearer ")){
+            String token = authHeader.substring(7);
+            tokenStore.deleteToken(token);
+
+            SecurityContextHolder.clearContext();
+        }else{
+            throw new RuntimeException("Invalid Token");
         }
     }
 }

@@ -9,14 +9,11 @@ import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @Slf4j
-@RequestMapping("/api/auth")
+@RequestMapping("/api")
 public class AuthController {
 
     private final AuthService authService;
@@ -25,7 +22,7 @@ public class AuthController {
         this.authService = authService;
     }
 
-    @PostMapping("/register")
+    @PostMapping("/auth/register")
     public ResponseEntity<?> register(@Valid @RequestBody RegisterRequestDTO dto){
         try {
             RegisterResponseDTO responseBody = authService.registerUser(dto);
@@ -36,11 +33,21 @@ public class AuthController {
     }
 
 
-    @PostMapping("/login")
+    @PostMapping("/auth/login")
     public ResponseEntity<?> login(@Valid @RequestBody LoginRequestDTO dto){
         try{
             LoginResponseDTO responseDTO = authService.login(dto);
             return new ResponseEntity<>(responseDTO,HttpStatus.OK);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @PostMapping("/user/logout")
+    public ResponseEntity<String> logout(@RequestHeader(value = "Authorization",required = false) String authHeader){
+        try {
+            authService.logout(authHeader);
+            return new ResponseEntity<>("Successfully logged-out",HttpStatus.OK);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

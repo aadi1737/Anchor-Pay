@@ -9,4 +9,5 @@ import org.springframework.http.ResponseEntity;
 public interface AuthService {
     public RegisterResponseDTO registerUser(RegisterRequestDTO dto);
     public LoginResponseDTO login(LoginRequestDTO dto);
+    public void logout(String token);
 }

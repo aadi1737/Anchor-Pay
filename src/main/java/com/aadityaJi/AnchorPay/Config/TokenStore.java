@@ -8,6 +8,7 @@ import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
@@ -71,5 +72,9 @@ public class TokenStore {
 
     public void deleteToken(String token){
         redisTemplate.delete(token);
+    }
+
+    public String getEmailFromToken(String token){
+        return redisTemplate.opsForValue().get(token);
     }
 }
