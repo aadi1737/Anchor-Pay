@@ -1,9 +1,14 @@
 package com.aadityaJi.AnchorPay.Service.Impl;
 
 import com.aadityaJi.AnchorPay.DTOs.WalletRequestDTO;
+import com.aadityaJi.AnchorPay.Entity.UserEntity;
 import com.aadityaJi.AnchorPay.Entity.WalletEntity;
+import com.aadityaJi.AnchorPay.Repository.UserRepository;
 import com.aadityaJi.AnchorPay.Repository.WalletRepository;
+import com.aadityaJi.AnchorPay.Response.ApiResponse;
 import com.aadityaJi.AnchorPay.Service.WalletService;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -12,9 +17,11 @@ import java.math.BigDecimal;
 public class WalletServiceImpl implements WalletService {
 
     private final WalletRepository walletRepository;
+    private final UserRepository userRepository;
 
-    public WalletServiceImpl(WalletRepository walletRepository) {
+    public WalletServiceImpl(WalletRepository walletRepository, UserRepository userRepository) {
         this.walletRepository = walletRepository;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -28,5 +35,45 @@ public class WalletServiceImpl implements WalletService {
 
         return savedWallet;
     }
+
+    @Override
+    public ApiResponse<BigDecimal> getBalance(String email) {
+        UserEntity user = userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("Invalid Request"));
+          ApiResponse<BigDecimal> apiResponse = new ApiResponse<>();
+          apiResponse.setData(user.getWallet().getBalance());
+          apiResponse.setSuccess(true);
+          apiResponse.setMessage("Balance Viewed at:"+System.currentTimeMillis());
+          return apiResponse;
+    }
+
+    @Override
+    public ApiResponse<?> addMoney(BigDecimal amount) {
+        try {
+            UserEntity user = findUserByFromSCH();
+            WalletEntity wallet = user.getWallet();
+
+            wallet.setBalance(wallet.getBalance().add(amount));
+
+            user.setWallet(wallet);
+
+            walletRepository.save(wallet);
+            return ApiResponse.builder()
+                    .data(wallet.getBalance())
+                    .success(true)
+                    .message("Money Added Successfully in Wallet:"+wallet.getWalletId())
+                    .build();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
+
+    public UserEntity findUserByFromSCH(){
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        return userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("Invalid Request"));
+
+    }
+
 
 }

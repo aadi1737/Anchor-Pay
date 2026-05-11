@@ -78,13 +78,17 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public void logout(String authHeader){
-        if(authHeader != null && authHeader.startsWith("Bearer ")){
-            String token = authHeader.substring(7);
-            tokenStore.deleteToken(token);
-
-            SecurityContextHolder.clearContext();
-        }else{
-            throw new RuntimeException("Invalid Token");
-        }
+        String token = authHeader.substring(7);
+        tokenStore.deleteToken(token);
+        SecurityContextHolder.clearContext();
+            //        Not required Cause after implementing jwtAuthFilter all requests are corect
+            //        if(authHeader != null && authHeader.startsWith("Bearer ")){
+            //            String token = authHeader.substring(7);
+            //            tokenStore.deleteToken(token);
+            //
+            //            SecurityContextHolder.clearContext();
+            //        }else{
+            //            throw new RuntimeException("Invalid Token");
+            //        }
     }
 }
