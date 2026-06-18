@@ -30,9 +30,12 @@ public class UserController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @PostMapping("addMoney")
+    @PostMapping("/addMoney")
     private ResponseEntity<?> addMoney(@RequestBody AddMoneyRequestDTO dto){
         ApiResponse<?> apiResponse = walletService.addMoney(dto.getAmount());
         return new ResponseEntity<>(apiResponse,HttpStatus.OK);
     }
+
+    @PostMapping("/sendMoney")
+    public ResponseEntity<?> sendMoney(@RequestBody )
 }
