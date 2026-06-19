@@ -1,5 +1,6 @@
 package com.aadityaJi.AnchorPay.Service.Impl;
 
+import com.aadityaJi.AnchorPay.Config.EmailService;
 import com.aadityaJi.AnchorPay.Config.TokenStore;
 import com.aadityaJi.AnchorPay.DTOs.*;
 import com.aadityaJi.AnchorPay.Entity.UserEntity;
@@ -24,11 +25,14 @@ public class AuthServiceImpl implements AuthService {
     private final BCryptPasswordEncoder  bCryptPasswordEncoder;
     private final WalletService walletService;
     private final TokenStore tokenStore;
-    public AuthServiceImpl(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder, WalletService walletService, TokenStore tokenStore){
+    private final EmailService emailService;
+
+    public AuthServiceImpl(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder, WalletService walletService, TokenStore tokenStore, EmailService emailService){
         this.userRepository = userRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.walletService = walletService;
         this.tokenStore = tokenStore;
+        this.emailService = emailService;
     }
 
 
@@ -49,6 +53,7 @@ public class AuthServiceImpl implements AuthService {
         user.setPassword(bCryptPasswordEncoder.encode(dto.getPassword()));
         user.setEmail(dto.getEmail());
         user.setPhone(dto.getPhone());
+        user.setActive(true);
         user.setRole(UserEntity.Role.USER);
 
         UserEntity saved = userRepository.save(user);
@@ -57,12 +62,20 @@ public class AuthServiceImpl implements AuthService {
         saved.setWallet(walletEntity);
         userRepository.save(saved);
 
+        emailService.sendMail(saved.getEmail(), "Welcome To AnchorPay", saved.getUsername()+ ", your " +
+                "account has been created successfully. Please login.");
+
         return RegisterResponseDTO.builder().username(saved.getUsername()).build();
     }
 
     @Override
     public LoginResponseDTO login(LoginRequestDTO dto) {
         UserEntity user = userRepository.findByEmail(dto.getEmail()).orElseThrow(() -> new InvalidLoginCredentialsException("Invalid Login Credentials."));
+
+        if(!user.isActive()){
+            throw new RuntimeException("Your account is Freezed!");
+        }
+
         if(!bCryptPasswordEncoder.matches(dto.getPassword(), user.getPassword())){
             throw new InvalidLoginCredentialsException("Invalid Login Credentials.");
         }else{

@@ -5,4 +5,5 @@ import com.aadityaJi.AnchorPay.Response.ApiResponse;
 
 public interface TransactionService {
     ApiResponse<?> sendMoney(SendMoneyRequestDTO dto);
+    ApiResponse<?> getTransactionHistory();
 }

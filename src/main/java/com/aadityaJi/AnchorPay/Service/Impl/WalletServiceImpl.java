@@ -48,7 +48,7 @@ public class WalletServiceImpl implements WalletService {
 
     @Override
     public ApiResponse<?> addMoney(BigDecimal amount) {
-        try {
+
             UserEntity user = findUserByFromSCH();
             WalletEntity wallet = user.getWallet();
 
@@ -62,15 +62,13 @@ public class WalletServiceImpl implements WalletService {
                     .success(true)
                     .message("Money Added Successfully in Wallet:"+wallet.getWalletId())
                     .build();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
     }
 
 
 
     public UserEntity findUserByFromSCH(){
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
+//        System.out.println("Authenticated email = " + email);
         return userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("Invalid Request"));
 
     }

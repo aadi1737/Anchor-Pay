@@ -1,5 +1,6 @@
 package com.aadityaJi.AnchorPay.Entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -32,6 +33,7 @@ public class UserEntity {
     @NotNull(message = "Email can not be null")
     private String email;
 
+    @JsonIgnore
     @Column(nullable = false)
     private String password;
 
